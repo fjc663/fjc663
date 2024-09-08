@@ -78,7 +78,7 @@
 
 ---
 
-四、计算模块接口部分的性能改进
+# 四、计算模块接口部分的性能改进
 
 ![性能分析图](./images/checkPaperStatistics.png)
 
@@ -91,6 +91,64 @@
 ---
 
 # 五、计算模块部分单元测试展示
+
+### 项目部分单元测试代码
+
+```python
+    # 文本预处理测试
+    def test_preprocess_text_basic(self):
+        # 基本中文文本处理
+        text = "这是一个简单的测试。"
+        result = preprocess_text(text)
+        self.assertEqual(result, "这是 一个 简单 的 测试")
+
+    # 预处理 - 特殊符号测试
+    def test_preprocess_text_special_characters(self):
+        # 测试含有特殊符号的文本处理
+        text = "测试，符号@#！"
+        result = preprocess_text(text)
+        self.assertEqual(result, "测试 符号")
+
+    # 相似度计算 - 完全相同的文本
+    def test_calculate_tfidf_similarity_identical(self):
+        similarity = calculate_tfidf_similarity("../测试文本/orig.txt", "../测试文本/orig.txt")
+        self.assertEqual(similarity, 100.0)
+        
+    # 相似度计算 - 一篇空文件
+    def test_calculate_tfidf_similarity_one_empty(self):
+        similarity = calculate_tfidf_similarity("testFile1.txt", "testFile3(模拟空文件).txt")
+        self.assertEqual(similarity, 0.0)  # 一篇空文件相似度应为 0
+
+    # 相似度计算 - 两篇空文件
+    def test_calculate_tfidf_similarity_both_empty(self):
+        similarity = calculate_tfidf_similarity("testFile3(模拟空文件).txt", "testFile3(模拟空文件).txt")
+        self.assertEqual(similarity, 0.0)  # 两篇空文件的相似度应为 0
+```
+
+### 测试函数与构造测试数据的思路
+
+#### `test_preprocess_text_basic`
+- **测试函数**: `preprocess_text`
+- **测试思路**: 构造一个简单的中文句子，测试 `preprocess_text` 函数对中文句子进行分词，检查分词结果是否符合预期。
+
+#### `test_preprocess_text_special_characters`
+- **测试函数**: `preprocess_text`
+- **测试思路**: 测试含有标点符号和特殊符号的文本，验证 `preprocess_text` 函数能否正确过滤掉不需要的符号，只保留有意义的文本内容。
+
+#### `test_calculate_tfidf_similarity_identical`
+- **测试函数**: `calculate_tfidf_similarity`
+- **测试思路**: 测试两篇完全相同的文本文件，检查函数是否能够识别出它们是 100% 相似。
+
+#### `test_calculate_tfidf_similarity_one_empty`
+- **测试函数**: `calculate_tfidf_similarity`
+- **测试思路**: 测试一篇正常文本和一篇空文件的情况，验证函数是否返回 0% 的相似度。
+
+#### `test_calculate_tfidf_similarity_both_empty`
+- **测试函数**: `calculate_tfidf_similarity`
+- **测试思路**: 测试两篇空文件，检查函数是否返回 0% 的相似度。
+
+### 测试覆盖率截图
+![测试覆盖率截图](./images/cov.png)
 
 ---
 

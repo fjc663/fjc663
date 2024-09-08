@@ -1,3 +1,4 @@
+import re
 import sys
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -11,6 +12,9 @@ jieba.setLogLevel(jieba.logging.INFO)
 # 预处理文本数据
 def preprocess_text(text):
     try:
+        # 使用正则表达式去除标点符号和特殊字符
+        text = re.sub(r'[^\w\s]', '', text)
+
         # 中文分词，并去除停用词、标点符号等
         tokens = jieba.lcut(text)
         return ' '.join(tokens)
@@ -30,6 +34,9 @@ def calculate_tfidf_similarity(file1_path, file2_path):
         # 文本预处理
         text1 = preprocess_text(text1)
         text2 = preprocess_text(text2)
+
+        if text1 == '' or text2 == '':
+            return 0.00
 
         # 使用 TF-IDF 计算文本向量
         vectorizer = TfidfVectorizer()
