@@ -1,6 +1,7 @@
 import random
 import fractions
 import argparse
+import os
 import re
 
 
@@ -113,7 +114,7 @@ def calculate_answer(expression):
 
 
 # 生成题目并写入文件
-def generate_problems(n, range_limit, exercise_file, answer_file):
+def generate_problems(n, range_limit):
     problems = []
     answers = []
 
@@ -131,79 +132,28 @@ def generate_problems(n, range_limit, exercise_file, answer_file):
                 formatted_answer = format_number(answer)  # 格式化答案
                 answers.append(formatted_answer)
 
-    # 将生成的题目写入文件
-    with open(exercise_file, 'w') as f_exercises, open(answer_file, 'w') as f_answers:
-        for i, (problem, answer) in enumerate(zip(problems, answers)):
-            f_exercises.write(f"{i + 1}. {problem} = \n")
-            f_answers.write(f"{i + 1}. {answer}\n")
+    return problems, answers
 
 
 # 验证用户答案并输出评分结果
-def validate_answers(exercise_file, answer_file, result_file):
-    with open(exercise_file, 'r') as f_exercise, open(answer_file, 'r') as f_answers:
-        correct_count = 0
-        wrong_count = 0
-        correct_indices = []
-        wrong_indices = []
+def validate_answers(exercise_data, answer_data):
+    correct_count = 0
+    wrong_count = 0
+    correct_indices = []
+    wrong_indices = []
 
-        exercises = f_exercise.readlines()
-        answers = f_answers.readlines()
+    for i in range(len(exercise_data)):
+        exercise = exercise_data[i].strip().split('. ')[1][:-2]
+        answer = answer_data[i].strip().split('. ')[1]
 
-        for i in range(len(exercises)):
-            exercise = exercises[i].strip().split('. ')[1][:-2]
-            answer = answers[i].strip().split('. ')[1]
+        expr = exercise.replace(" × ", " * ").replace(" ÷ ", " / ")
+        expr = expr.replace("(", "( ").replace(")", " )")
 
-            expr = exercise.replace(" × ", " * ").replace(" ÷ ", " / ")
-            expr = expr.replace("(", "( ").replace(")", " )")
+        if answer == format_number(calculate_answer(expr)):
+            correct_count += 1
+            correct_indices.append(i + 1)
+        else:
+            wrong_count += 1
+            wrong_indices.append(i + 1)
 
-            if answer == format_number(calculate_answer(expr)):
-                correct_count += 1
-                correct_indices.append(i + 1)
-            else:
-                wrong_count += 1
-                wrong_indices.append(i + 1)
-
-    # 将结果写入 Grade.txt
-    with open(result_file, 'w') as f_grade:
-        f_grade.write(f"Correct: {correct_count} ({', '.join(map(str, correct_indices))})\n")
-        f_grade.write(f"Wrong: {wrong_count} ({', '.join(map(str, wrong_indices))})\n")
-
-
-# 主函数，处理命令行参数
-def main():
-    parser = argparse.ArgumentParser(description="生成并验证四则运算")
-
-    # 添加参数
-    parser.add_argument('-n', type=int, help="生成四则运算的数量")
-    parser.add_argument('-r', type=int, help="题目中数值的范围")
-    parser.add_argument('-e', type=str, help="练习题目文件")
-    parser.add_argument('-a', type=str, help="练习题目答案文件")
-
-    args = parser.parse_args()
-
-    # 生成题目模式
-    if args.n and args.r:
-        if args.r <= 1:
-            print("Error: 范围应大于 1")
-            return
-
-        exercise_file = 'Exercises.txt'
-        answer_file = 'Answers.txt'
-
-        generate_problems(args.n, args.r, exercise_file, answer_file)
-        print(f"{args.n} 四则运算题目生成在 {exercise_file} 和答案保存在 {answer_file}")
-
-    # 验证答案模式
-    elif args.e and args.a:
-        result_file = 'Grade.txt'
-
-        validate_answers(args.e, args.a, result_file)
-        print(f"对错结果统计保存在 {result_file}")
-
-    # 参数错误提示
-    else:
-        print("Error: 缺少所需参数。使用 -n 和 -r 生成题目，或使用 -e 和 -a 验证答案")
-
-
-if __name__ == "__main__":
-    main()
+    return correct_count, wrong_count, correct_indices, wrong_indices
