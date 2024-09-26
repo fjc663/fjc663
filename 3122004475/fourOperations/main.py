@@ -183,7 +183,7 @@ def main():
 
     # 生成题目模式
     if args.n and args.r:
-        if args.r <= 1:
+        if args.r < 1:
             print("Error: 范围应大于 1")
             return
 

@@ -212,7 +212,6 @@ def select_file(entry, file_type):
         entry.insert(0, file_path)
 
 
-
 # 保存结果
 def save_results(correct_count, wrong_count, correct_indices, wrong_indices):
     file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Text files", "*.txt")])
@@ -301,7 +300,6 @@ btn_generate_problems.grid(row=2, column=0, padx=(40, 5), pady=10)
 
 btn_generate_answers = tk.Button(frame_generate, text="生成答案", command=generate_answers_gui, state=tk.DISABLED)
 btn_generate_answers.grid(row=2, column=1, padx=(5, 10), pady=10)
-
 
 # 创建一个框架来包含 Treeview 和滚动条
 frame = tk.Frame(root)
