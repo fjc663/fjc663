@@ -203,10 +203,14 @@ def save_answers():
 
 # 文件选择部分
 def select_file(entry, file_type):
+    # 打开文件选择对话框，过滤文件类型为 .txt 文件
     file_path = filedialog.askopenfilename(filetypes=[(file_type, "*.txt")])
     if file_path:
+        # 清空输入框内容
         entry.delete(0, tk.END)
-        entry.insert(0, file_path.split('/')[-1])
+        # 将选中的完整文件路径插入到输入框中
+        entry.insert(0, file_path)
+
 
 
 # 保存结果
